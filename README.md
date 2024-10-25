@@ -25,16 +25,12 @@ The LinuxPatch Server Appliance is a self-hosted solution designed to simplify L
 - Basic knowledge of Docker commands.
 
 ### Installation
-Run the following command to deploy the appliance:
-```bash
-./configure.sh
-```
-This will pull the latest image and start the server, exposing it on port 80.
-
-### Accessing the Web Interface
-1. Open a browser and navigate to `https://<your-server-ip>` (or `http://<your-server-ip>:80` if TLS is not configured).
-2. To enable TLS, update TLS directives in `./data/.env` file and place your certificate at `./data/certs/server.crt` and private key at `./data/certs/server.key`.
-3. Register your account and start adding servers for patch management.
+1. Clone the repository: `git clone https://github.com/linuxpatch/self-hosted.git`
+2. Run the configuration script: `./configure.sh`
+3. Follow the prompts to set up your server.
+4. Access the web interface via `https://<your-server-ip>` (or `http://<your-server-ip>:80` if TLS is not configured).
+5. To enable TLS, update TLS directives in `./data/.env` file and place your certificate at `./data/certs/server.crt` and private key at `./data/certs/server.key`.
+6. Register your account and start adding servers for patch management.
 
 ## Supported Distributions
 - Ubuntu (16.04+)
@@ -57,5 +53,4 @@ For questions, support, or custom pricing, please contact [support@linuxpatch.co
 Efficient, reliable, and scalable, LinuxPatch helps you maintain a robust patch management strategy for your Linux infrastructure. With features like intelligent reboot scheduling, detailed vulnerability reports, and customizable alerts, you can streamline server maintenance and improve security compliance.
 
 ## Get Started Today
-Secure up to 3 servers for free and explore all the benefits of automated Linux patch management. [Download the Docker image](https://hub.docker.com/r/linuxpatch/appliance and start patching effortlessly.
-
+Secure up to 3 servers for free and explore all the benefits of automated Linux patch management.
