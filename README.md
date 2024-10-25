@@ -57,5 +57,5 @@ For questions, support, or custom pricing, please contact [support@linuxpatch.co
 Efficient, reliable, and scalable, LinuxPatch helps you maintain a robust patch management strategy for your Linux infrastructure. With features like intelligent reboot scheduling, detailed vulnerability reports, and customizable alerts, you can streamline server maintenance and improve security compliance.
 
 ## Get Started Today
-Secure up to 3 servers for free and explore all the benefits of automated Linux patch management. [Download the Docker image](https://linuxpatch.com) and start patching effortlessly.
+Secure up to 3 servers for free and explore all the benefits of automated Linux patch management. [Download the Docker image](https://hub.docker.com/r/linuxpatch/appliance and start patching effortlessly.
 
