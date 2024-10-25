@@ -1,5 +1,5 @@
 services:
-  app:
+  linuxpatch-app:
     restart: unless-stopped
     pull_policy: always
     image: linuxpatch/appliance:latest
@@ -39,17 +39,17 @@ services:
     volumes:
       - ./data:/app/data
     depends_on:
-      db:
+      linuxpatch-db:
         condition: service_healthy
-      redis:
+      linuxpatch-redis:
         condition: service_healthy
     networks:
-      - app-network
+      - linuxpatch-network
     ports:
       - 80:80
       - 443:443
 
-  db:
+  linuxpatch-db:
     restart: unless-stopped
     image: percona/percona-server:8.0
     command: mysqld
@@ -59,23 +59,23 @@ services:
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - linuxpatch-mysql-data:/var/lib/mysql
     networks:
-      - app-network
+      - linuxpatch-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 10s
       retries: 10
 
-  redis:
+  linuxpatch-redis:
     restart: unless-stopped
     image: redis:6
     command: redis-server
     volumes:
-      - redis_data:/data
+      - linuxpatch-redis-data:/data
     networks:
-      - app-network
+      - linuxpatch-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -83,11 +83,11 @@ services:
       retries: 10
 
 volumes:
-  mysql_data:
+  linuxpatch-mysql-data:
     driver: local
-  redis_data:
+  linuxpatch-redis-data:
     driver: local
 
 networks:
-  app-network:
+  linuxpatch-network:
     driver: bridge
