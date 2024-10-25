@@ -135,7 +135,7 @@ echo "Updating docker-compose.yml with configuration..."
 
 cat > docker-compose.yml << EOF
 services:
-  app:
+  linuxpatch-app:
     restart: unless-stopped
     image: linuxpatch/appliance:latest
     expose:
@@ -143,22 +143,22 @@ services:
       - "443" 
     command: ["./web"]
     environment:
-      - PREFIX_DIR=${PREFIX_DIR}
-      - CONFIG_FILE=${PREFIX_DIR}/.env
+      - PREFIX_DIR=/app/data
+      - CONFIG_FILE=/app/data/.env
       - DB_TYPE=${DB_TYPE:-mysql}
-      - DB_HOST=db
+      - DB_HOST=linuxpatch-db
       - DB_PORT=3306
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - REDIS_HOST=redis
+      - REDIS_HOST=linuxpatch-redis
       - REDIS_PORT=6379
       - REDIS_DATABASE=${REDIS_DATABASE}
       - SESSION_SECRET=${SESSION_SECRET}
-      - TLS_CERT_FILE=${TLS_CERT_FILE:-${PREFIX_DIR}/certs/server.crt}
-      - TLS_KEY_FILE=${TLS_KEY_FILE:-${PREFIX_DIR}/certs/server.key}
-      - TLS_ENABLED=${TLS_ENABLED:-1}
-      - TLS_CA_FILE=${TLS_CA_FILE:-${PREFIX_DIR}/certs/ca.crt}
+      - TLS_CERT_FILE=/app/data/certs/server.crt
+      - TLS_KEY_FILE=/app/data/certs/server.key
+      - TLS_ENABLED=${TLS_ENABLED:-0}
+      - TLS_CA_FILE=/app/data/certs/ca.crt
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USERNAME=${SMTP_USERNAME}
@@ -176,17 +176,17 @@ services:
     volumes:
       - ${PREFIX_DIR}/data:/app/data
     depends_on:
-      db:
+      linuxpatch-db:
         condition: service_healthy
-      redis:
+      linuxpatch-redis:
         condition: service_healthy
     networks:
-      - app-network
+      - linuxpatch-app-network
     ports:
       - 80:80
       - 443:443
 
-  db:
+  linuxpatch-db:
     restart: unless-stopped
     image: percona/percona-server:8.0
     command: mysqld
@@ -196,23 +196,23 @@ services:
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - linuxpatch-mysql-data:/var/lib/mysql
     networks:
-      - app-network
+      - linuxpatch-app-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 10s
       retries: 10
 
-  redis:
+  linuxpatch-redis:
     restart: unless-stopped
     image: redis:6
     command: redis-server
     volumes:
-      - redis_data:/data
+      - linuxpatch-redis-data:/data
     networks:
-      - app-network
+      - linuxpatch-app-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -220,11 +220,11 @@ services:
       retries: 10
 
 volumes:
-  mysql_data:
-  redis_data:
+  linuxpatch-mysql-data:
+  linuxpatch-redis-data:
 
 networks:
-  app-network:
+  linuxpatch-app-network:
     driver: bridge
 EOF
 
