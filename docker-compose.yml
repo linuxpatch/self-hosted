@@ -1,0 +1,93 @@
+services:
+  app:
+    restart: unless-stopped
+    pull_policy: always
+    image: linuxpatch/appliance:latest
+    expose:
+      - 80
+      - 443
+    command: ["./web"]
+    environment:
+      - PREFIX_DIR=/app/data
+      - CONFIG_FILE=/app/data/.env
+      - DB_TYPE=${DB_TYPE:-mysql}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - TLS_CERT_FILE=${PREFIX_DIR}/certs/server.crt
+      - TLS_KEY_FILE=${PREFIX_DIR}/certs/server.key
+      - TLS_ENABLED=${TLS_ENABLED:-1}
+      - TLS_CA_FILE=${PREFIX_DIR}/certs/ca.crt
+      - SMTP_HOST=${SMTP_HOST:-localhost}
+      - SMTP_PORT=${SMTP_PORT:-25}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+      - SMTP_USE_TLS=${SMTP_USE_TLS:-1}
+      - LOG_FILE=
+      - SERVER_NAME=${SERVER_NAME:-localhost}
+      - SERVER_HOST=${SERVER_HOST:-0.0.0.0}
+      - SERVER_PORT=${SERVER_PORT:-80}
+      - TLS_DOMAIN=${TLS_DOMAIN:-localhost}
+      - TLS_PORT=${TLS_PORT:-443}
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    ports:
+      - 80:80
+      - 443:443
+
+  db:
+    restart: unless-stopped
+    image: percona/percona-server:8.0
+    command: mysqld
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    restart: unless-stopped
+    image: redis:6
+    command: redis-server
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
