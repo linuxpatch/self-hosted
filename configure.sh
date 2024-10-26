@@ -54,6 +54,7 @@ else
     echo "No existing configuration found. Generating new credentials..."
     
     DOMAIN=$(hostname -f 2>/dev/null || hostname)
+    PREFIX_DIR="/app/data"
 
     # Generate random credentials
     DB_USERNAME="lpuser_$(generate_random 8)"
@@ -175,7 +176,7 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     volumes:
-      - ${PREFIX_DIR}/data:/app/data
+      - ./data:/app/data
     depends_on:
       linuxpatch-db:
         condition: service_healthy
