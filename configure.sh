@@ -137,6 +137,7 @@ cat > docker-compose.yml << EOF
 services:
   linuxpatch-app:
     restart: unless-stopped
+    pull_policy: always
     image: linuxpatch/appliance:latest
     expose:
       - "80"
